@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Nossa Luta É Ancestral — Livro-jogo</title>
+<style>
+  :root{ --bg:#0e2016; --panel:#173427; --accent:#e0a92e; --text:#f0ede0; --muted:#a9c2b0; }
+  body{ margin:0; font-family:'Trebuchet MS',Georgia,serif; background:radial-gradient(ellipse at top, #1d4732, var(--bg)); color:var(--text); min-height:100vh; display:flex; justify-content:center; padding:40px 16px;}
+  .book{max-width:780px; width:100%;}
+  h1{font-size:2em; text-align:center; color:var(--accent); margin-bottom:0;}
+  .subtitle{text-align:center; color:var(--muted); font-style:italic; margin-top:4px; margin-bottom:26px; font-size:0.95em;}
+  .scene-label{color:var(--accent); text-transform:uppercase; letter-spacing:2px; font-size:0.8em; margin-bottom:10px;}
+  .panel{background:var(--panel); border:1px solid #2c5940; border-radius:6px; padding:28px 30px; box-shadow:0 8px 30px rgba(0,0,0,0.35);}
+  .text{font-size:1.12em; line-height:1.78; white-space:pre-line;}
+  .choices{margin-top:24px; display:flex; flex-direction:column; gap:12px;}
+  button.choice{ background:transparent; border:1px solid var(--accent); color:var(--text); padding:14px 18px; font-family:inherit; font-size:1em; text-align:left; border-radius:4px; cursor:pointer; transition:all .2s;}
+  button.choice:hover{background:var(--accent); color:#0e2016;}
+  .curinga{ margin-top:16px; padding:12px 14px; border-left:3px solid var(--accent); background:rgba(224,169,46,0.08); font-size:0.95em; font-style:italic; color:var(--muted);}
+  .progresso{font-size:0.8em; color:var(--muted); text-align:center; margin-bottom:6px;}
+  .restart{margin-top:28px; text-align:center;}
+  .restart button{background:var(--accent); color:#0e2016; border:none; padding:10px 24px; border-radius:4px; font-family:inherit; cursor:pointer; font-size:0.95em;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:26px;}
+</style>
+</head>
+<body>
+<div class="book">
+  <h1>NOSSA LUTA É ANCESTRAL</h1>
+  <div class="subtitle">livro-jogo de Teatro-Fórum baseado na obra do Teatro Maiuhi (2022)<br>— você é a plateia que também entra em cena —</div>
+  <div class="progresso" id="progresso"></div>
+  <div class="scene-label" id="sceneLabel">Ato</div>
+  <div class="panel">
+    <div class="text" id="text"></div>
+    <div class="curinga" id="curinga"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+  <div class="restart"><button onclick="restart()">Recomeçar</button></div>
+  <footer>Adaptação livre e educacional a partir de Teatro Maiuhi (2022), <em>Nossa Luta É Ancestral</em>. Uso pedagógico.</footer>
+</div>
+
+<script>
+let state = { e1:false, e2:false, e3:false };
+
+function progressoTexto(){
+  const feitos = [state.e1,state.e2,state.e3].filter(Boolean).length;
+  return `Esquetes concluídos: ${feitos} de 3`;
+}
+
+const nodes = {
+  hub: {
+    dynamic: true,
+    scene: "O terreiro — escolha sua próxima luta",
+    text: () => {
+      const feitos = [state.e1,state.e2,state.e3].filter(Boolean).length;
+      if (feitos === 0) return "Você chega a um terreiro de teatro na Terra Indígena Uaçá, no Oiapoque. Jovens dos povos Karipuna, Galibi-Marworno, Palikur-Arukwayene e Waiãpi se preparam para encenar três cenas nascidas de suas próprias opressões.\n\nMas aqui, você não é só plateia. No Teatro-Fórum, quando a cena chega ao ponto de maior injustiça, o(a) curinga vai parar tudo — e te convidar a entrar.\n\nQual das três lutas você quer testemunhar e enfrentar primeiro?";
+      if (feitos < 3) return "O terreiro continua aceso. Ainda há lutas para enfrentar antes do canto final.";
+      return "As três lutas já foram enfrentadas. O terreiro inteiro espera por você para o encerramento.";
+    },
+    choicesFn: () => {
+      const c = [];
+      if (!state.e1) c.push({ label: "Silenciamento racial: a luta de ontem e de hoje", next: "silenciamento1" });
+      if (!state.e2) c.push({ label: "O SUS e o susto do jacaré", next: "sus1" });
+      if (!state.e3) c.push({ label: "A Terra chora: interesses vindos de fora!", next: "terra1" });
+      if (state.e1 && state.e2 && state.e3) c.push({ label: "Ir ao canto coletivo final", next: "final" });
+      return c;
+    }
+  },
+
+  // --- Esquete 1: Silenciamento racial ---
+  silenciamento1: {
+    scene: "Esquete 1 — Silenciamento racial",
+    text: "Um jovem estudante indígena está em uma sala de aula universitária. Ele responde a uma pergunta em sua língua materna, por engano, antes de se corrigir para o português. Um colega ri. O professor, sem perceber a gravidade, também sorri.\n\nO jovem sente o corpo se fechar. A cena começa a mostrar o racismo se instalando, quase silencioso, quase \"normal\".",
+    curinga: "O(A) curinga bate palmas: \"Parem a cena! Alguém da plateia quer entrar no lugar do jovem estudante e mudar o rumo disso?\"",
+    choices: [
+      { label: "Entrar em cena e responder ao riso na hora, publicamente", next: "silenciamento2a" },
+      { label: "Entrar em cena e procurar a coordenação do curso depois da aula", next: "silenciamento2b" },
+      { label: "Entrar em cena e conversar diretamente com o colega que riu, em particular", next: "silenciamento2c" }
+    ]
+  },
+  silenciamento2a: {
+    scene: "Esquete 1 — Confronto direto",
+    text: "Você, no lugar do jovem, se levanta e diz: \"Eu não falhei ao falar minha língua. Vocês é que nunca tiveram que aprender a de vocês em outro território.\"\n\nA sala fica em silêncio. Alguns colegas abaixam a cabeça, sem saber o que fazer com o desconforto. O riso para — mas a ferida continua ali, exposta.",
+    curinga: "O(A) curinga pergunta à plateia: \"Isso resolveu o racismo da sala, ou só expôs o problema? O que falta ainda?\"",
+    choices: [{ label: "Voltar ao terreiro", next: "hub_e1" }]
+  },
+  silenciamento2b: {
+    scene: "Esquete 1 — Caminho institucional",
+    text: "Você, no lugar do jovem, guarda a dor por ora e, depois da aula, procura a coordenação do curso, relatando o ocorrido e pedindo que a universidade trate o tema com toda a turma, não só com ele.\n\nÉ mais lento. Mas talvez alcance mais gente da próxima vez.",
+    curinga: "O(A) curinga pergunta à plateia: \"O que pesa mais: a resposta imediata ou a mudança que demora, mas alcança a instituição inteira?\"",
+    choices: [{ label: "Voltar ao terreiro", next: "hub_e1" }]
+  },
+  silenciamento2c: {
+    scene: "Esquete 1 — Conversa em particular",
+    text: "Você procura o colega que riu, sozinho, sem plateia. Explica, sem gritar, o que aquele riso significou. O colega, sem a pressão do grupo observando, parece de fato ouvir pela primeira vez.\n\nNão é uma vitória visível para a turma toda — mas talvez seja a mudança mais duradoura, pessoa por pessoa.",
+    curinga: "O(A) curinga pergunta à plateia: \"Mudar uma pessoa de cada vez é suficiente diante de um racismo estrutural, ou é só o começo?\"",
+    choices: [{ label: "Voltar ao terreiro", next: "hub_e1" }]
+  },
+  hub_e1: { dynamic:true, redirectSet: {e1:true}, redirectTo: "hub" },
+
+  // --- Esquete 2: SUS e vacina ---
+  sus1: {
+    scene: "Esquete 2 — O SUS e o susto do jacaré",
+    text: "Em uma aldeia, durante a pandemia, uma família discute se deve tomar a vacina contra a Covid-19. Um boato circula: \"a vacina é o susto do jacaré\", dizem, uma armadilha.\n\nAo mesmo tempo, o pajé da aldeia segue cuidando dos corpos e dos espíritos com seus próprios saberes — mas a doença não escolhe quem respeitar.",
+    curinga: "O(A) curinga para a cena: \"Quem quer entrar como um jovem da família e conversar com os mais velhos sobre o que fazer?\"",
+    choices: [
+      { label: "Defender que só a medicina do pajé é suficiente", next: "sus2a" },
+      { label: "Propor unir a medicina tradicional do pajé com a vacina do posto de saúde", next: "sus2b" },
+      { label: "Sugerir chamar o próprio posto de saúde para conversar com o pajé, junto à família", next: "sus2c" }
+    ]
+  },
+  sus2a: {
+    scene: "Esquete 2 — Só a tradição",
+    text: "Você defende que a família confie apenas na cura do pajé. Há acolhimento nisso, e respeito à sabedoria ancestral — mas a cena mostra também o medo real da doença que continua a rondar a aldeia.",
+    curinga: "O(A) curinga pergunta à plateia: \"É possível respeitar a medicina tradicional sem abrir mão da proteção da vacina? Como a cena poderia mostrar as duas coisas juntas?\"",
+    choices: [{ label: "Voltar ao terreiro", next: "hub_e2" }]
+  },
+  sus2b: {
+    scene: "Esquete 2 — As duas medicinas juntas",
+    text: "Você propõe que o pajé continue cuidando do espírito e da comunidade, enquanto a vacina cuida do corpo diante do vírus novo. Não é abrir mão da tradição — é ampliar o cuidado.\n\nO boato do \"susto do jacaré\" perde força quando a comunidade decide, junta, o que é melhor para todos.",
+    curinga: "O(A) curinga celebra: \"Essa é a força do Teatro-Fórum: a solução nasce da própria comunidade, não de fora dela.\"",
+    choices: [{ label: "Voltar ao terreiro", next: "hub_e2" }]
+  },
+  sus2c: {
+    scene: "Esquete 2 — Diálogo entre saberes",
+    text: "Você sugere trazer alguém do posto de saúde para sentar com o pajé e a família, sem hierarquia entre os saberes. É um encontro tenso no início — desconfiança dos dois lados —, mas aos poucos vira conversa.\n\nO pajé escuta sobre o vírus; o profissional de saúde escuta sobre o corpo, o espírito e a comunidade. Nenhum dos dois sai da conversa igual a como entrou.",
+    curinga: "O(A) curinga pergunta à plateia: \"O que muda quando dois saberes diferentes se sentam como iguais, em vez de um tentar convencer o outro?\"",
+    choices: [{ label: "Voltar ao terreiro", next: "hub_e2" }]
+  },
+  hub_e2: { dynamic:true, redirectSet: {e2:true}, redirectTo: "hub" },
+
+  // --- Esquete 3: garimpo ---
+  terra1: {
+    scene: "Esquete 3 — A Terra chora: interesses vindos de fora!",
+    text: "Um forasteiro chega à aldeia, simpático, cheio de promessas: dinheiro fácil, equipamentos, uma vida \"melhor\". Aos poucos, ele seduz alguns jovens para que aceitem a entrada de maquinário de garimpo ilegal em terra indígena.\n\nA Terra, personificada, chora baixinho ao fundo da cena — mas os jovens, hipnotizados pelas promessas, ainda não a escutam.",
+    curinga: "O(A) curinga para a cena: \"Alguém quer entrar no lugar de um desses jovens antes que a decisão seja tomada?\"",
+    choices: [
+      { label: "Aceitar a proposta do forasteiro, pensando na necessidade imediata", next: "terra2a" },
+      { label: "Recusar e convocar a aldeia para decidir juntos sobre o território", next: "terra2b" },
+      { label: "Fingir aceitar, para descobrir quem mais está por trás do forasteiro", next: "terra2c" }
+    ]
+  },
+  terra2a: {
+    scene: "Esquete 3 — A sedução vence, por ora",
+    text: "Você aceita a proposta. O maquinário chega. Por um tempo, há dinheiro — mas o rio começa a mudar de cor, e a Terra chora mais alto.\n\nA cena não termina em tragédia definitiva: ela para exatamente aqui, para que a plateia discuta o que ainda pode ser feito.",
+    curinga: "O(A) curinga pergunta à plateia: \"O que a comunidade pode fazer agora, depois que o garimpo já entrou? É tarde demais, ou ainda há caminho?\"",
+    choices: [{ label: "Voltar ao terreiro", next: "hub_e3" }]
+  },
+  terra2b: {
+    scene: "Esquete 3 — A aldeia decide junta",
+    text: "Você recusa sozinho, mas não para por aí: convoca a aldeia inteira para discutir a proposta do forasteiro. A decisão deixa de ser de um jovem isolado e passa a ser de todos, fortalecendo a defesa coletiva do território.\n\nO forasteiro, sem conseguir dividir a comunidade, vai embora sem o que veio buscar.",
+    curinga: "O(A) curinga reforça: \"A força não está em resistir sozinho, mas em resistir junto — essa é a lição do Teatro do Oprimido.\"",
+    choices: [{ label: "Voltar ao terreiro", next: "hub_e3" }]
+  },
+  terra2c: {
+    scene: "Esquete 3 — Descobrindo a rede por trás",
+    text: "Você finge interesse, ganha a confiança do forasteiro, e descobre que ele responde a uma rede maior de interesses fora da aldeia. Com essa informação, a comunidade consegue não apenas recusar a proposta, mas denunciar toda a articulação por trás do garimpo ilegal.\n\nÉ arriscado — fingir aceitar significa, por um tempo, andar perto do perigo.",
+    curinga: "O(A) curinga pergunta à plateia: \"Vale o risco de se aproximar do perigo para entender melhor o inimigo? Onde está o limite dessa estratégia?\"",
+    choices: [{ label: "Voltar ao terreiro", next: "hub_e3" }]
+  },
+  hub_e3: { dynamic:true, redirectSet: {e3:true}, redirectTo: "hub" },
+
+  final: {
+    scene: "Encerramento — Canto coletivo",
+    text: "As três lutas se encerram, mas nenhuma delas termina de verdade fora do palco — o racismo, a desinformação em saúde, a exploração do território continuam existindo lá fora, na vida real dos estudantes que assistiram e atuaram.\n\nToda a comunidade se levanta e canta, junto, a canção que dá nome à obra:\n\n\"Nossa luta é ancestral.\"\n\nVocê não venceu um jogo. Você experimentou, por um instante, o que é ser curinga da própria história — e talvez tenha percebido que, em cada uma das três lutas, havia mais de um caminho possível.",
+    choices: []
+  }
+};
+
+function restart(){
+  state = { e1:false, e2:false, e3:false };
+  goTo('hub');
+}
+
+function goTo(id){
+  let node = nodes[id];
+  if (node.redirectSet) {
+    Object.assign(state, node.redirectSet);
+    goTo(node.redirectTo);
+    return;
+  }
+  document.getElementById('progresso').textContent = progressoTexto();
+  document.getElementById('sceneLabel').textContent = node.scene;
+  document.getElementById('text').textContent = typeof node.text === 'function' ? node.text() : node.text;
+  document.getElementById('curinga').textContent = node.curinga || "";
+  const choicesDiv = document.getElementById('choices');
+  choicesDiv.innerHTML = "";
+  const choiceList = node.choicesFn ? node.choicesFn() : node.choices;
+  choiceList.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.textContent = c.label;
+    btn.onclick = () => goTo(c.next);
+    choicesDiv.appendChild(btn);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+goTo('hub');
+</script>
+</body>
+</html>

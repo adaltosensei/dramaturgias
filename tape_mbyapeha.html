@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Tape Mbyapeha — Caminhos da Sabedoria — Livro-jogo</title>
+<style>
+  :root{ --bg:#1a0f1f; --panel:#2b1a33; --accent:#c98fd6; --text:#f2e9f5; --muted:#c3aed1; --terra:#7cae5e;}
+  body{ margin:0; font-family:Georgia,'Times New Roman',serif; background:radial-gradient(ellipse at top, #3a2145, var(--bg)); color:var(--text); min-height:100vh; display:flex; justify-content:center; padding:40px 16px;}
+  .book{max-width:760px; width:100%;}
+  h1{font-size:1.9em; text-align:center; color:var(--accent); margin-bottom:0;}
+  .subtitle{text-align:center; color:var(--muted); font-style:italic; margin-top:4px; margin-bottom:26px; font-size:0.95em;}
+  .scene-label{color:var(--accent); text-transform:uppercase; letter-spacing:2px; font-size:0.8em; margin-bottom:10px;}
+  .panel{background:var(--panel); border:1px solid #4a2d57; border-radius:6px; padding:28px 30px; box-shadow:0 8px 30px rgba(0,0,0,0.35);}
+  .text{font-size:1.12em; line-height:1.78; white-space:pre-line;}
+  .choices{margin-top:24px; display:flex; flex-direction:column; gap:12px;}
+  button.choice{ background:transparent; border:1px solid var(--accent); color:var(--text); padding:14px 18px; font-family:inherit; font-size:1em; text-align:left; border-radius:4px; cursor:pointer; transition:all .2s;}
+  button.choice:hover{background:var(--accent); color:#1a0f1f;}
+  .voz{ margin-top:16px; padding:12px 14px; border-left:3px solid var(--terra); background:rgba(124,174,94,0.08); font-size:0.95em; font-style:italic; color:#d7e8cc;}
+  .restart{margin-top:28px; text-align:center;}
+  .restart button{background:var(--accent); color:#1a0f1f; border:none; padding:10px 24px; border-radius:4px; font-family:inherit; cursor:pointer; font-size:0.95em;}
+  .aviso{background:#3a2145; border:1px solid var(--accent); border-radius:6px; padding:14px 18px; margin-bottom:22px; font-size:0.9em; color:var(--muted);}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:26px;}
+</style>
+</head>
+<body>
+<div class="book">
+  <h1>TAPE MBYAPEHA</h1>
+  <div class="subtitle">Caminhos da Sabedoria — livro-jogo baseado na obra do Grupo Liberdade PKR (2023)</div>
+  <div class="aviso">Este jogo trata, de forma alegórica e cuidadosa, de temas sensíveis vividos por jovens indígenas: preconceito, vício e sofrimento psíquico. Nenhuma cena descreve atos de autolesão — todos os caminhos do jogo conduzem ao acolhimento e à força coletiva, como na obra original.</div>
+  <div class="scene-label" id="sceneLabel">Cena</div>
+  <div class="panel">
+    <div class="text" id="text"></div>
+    <div class="voz" id="voz"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+  <div class="restart"><button onclick="goTo('inicio')">Recomeçar a jornada</button></div>
+  <footer>Adaptação livre e educacional a partir do Grupo Liberdade PKR (2023), <em>Tape Mbyapeha — Caminhos da Sabedoria</em>. Uso pedagógico.</footer>
+</div>
+
+<script>
+const nodes = {
+  inicio: {
+    scene: "Abertura — o círculo ritual",
+    text: "Em torno do yvyra kutu, objeto sagrado das rezas Guarani Kaiowá, um círculo se forma. Mãe Terra canta em língua Guarani, lamentando o desrespeito histórico à natureza — mas também afirmando que a luta do seu povo segue viva, agora também com o conhecimento e as tecnologias contemporâneas.\n\nVocê é um dos dois jovens da Terra Indígena Guapo'y que precisam decidir, juntos, se vão tentar a universidade, fora da aldeia. Ao seu lado está seu amigo — o outro jovem da história.",
+    voz: "Mãe Terra: \"A luta do meu povo não é mais só com arcos e com flechas.\"",
+    choices: [
+      { label: "Seguir em frente com seu amigo, mesmo com medo do 'mundo dos karai'", next: "abordagem" },
+      { label: "Antes de seguir, sentar um instante com seu amigo para conversar sobre o medo", next: "conversa_previa" }
+    ]
+  },
+  conversa_previa: {
+    scene: "Antes da travessia",
+    text: "Você e seu amigo se sentam à sombra, ainda dentro do território conhecido. Falam, sem pressa, sobre o que os assusta no mundo de fora: será que vão ser respeitados? Será que ainda serão eles mesmos do outro lado?\n\nNenhuma resposta chega pronta — mas o simples fato de dividir o medo já muda o peso dele.",
+    voz: "Seu amigo: \"Pelo menos a gente não vai sozinho.\"",
+    choices: [{ label: "Seguir, agora os dois juntos, para a travessia", next: "abordagem" }]
+  },
+  abordagem: {
+    scene: "O encontro com Vício e Preconceito",
+    text: "No caminho entre a aldeia e o mundo de fora, duas figuras se aproximam: Vício e Preconceito. Elas não chegam gritando — chegam sussurrando, insinuando que vocês não são bons o suficiente, que não vão pertencer a lugar nenhum, nem à aldeia, nem à universidade.\n\nO peso dessas vozes cresce dentro de você. E você percebe que seu amigo também está sentindo o mesmo peso, talvez até mais forte.",
+    voz: "Preconceito: \"Vocês acham mesmo que têm lugar lá?\"  —  Vício: \"Vem, é mais fácil esquecer.\"",
+    choices: [
+      { label: "Guardar essa dor para si, e se afastar de todos, inclusive do seu amigo", next: "isolamento" },
+      { label: "Procurar alguém da aldeia para falar sobre o que está sentindo", next: "busca_apoio" },
+      { label: "Ficar atento ao seu amigo, que parece estar carregando um peso ainda maior", next: "cuidar_do_outro" }
+    ]
+  },
+  isolamento: {
+    scene: "O peso do silêncio",
+    text: "Você tenta carregar tudo sozinho. Os dias ficam mais pesados, mais silenciosos. Vício e Preconceito parecem crescer justamente na solidão.\n\nMas mesmo no silêncio, o círculo ritual da aldeia não te esqueceu — Rituais, Sabedoria e Respeito percebem que algo mudou em você, e se aproximam antes que o peso se torne grande demais para ser carregado sozinho.",
+    voz: "Sabedoria: \"Ninguém deveria atravessar essa noite sem a mão de alguém.\"",
+    choices: [{ label: "Deixar que Rituais, Sabedoria e Respeito se aproximem", next: "intervencao" }]
+  },
+  busca_apoio: {
+    scene: "A coragem de falar",
+    text: "Você procura alguém da aldeia e conta o que Vício e Preconceito têm sussurrado. Não é fácil colocar em palavras — mas, ao dizer em voz alta, o peso já começa a mudar de lugar.\n\nRituais, Sabedoria e Respeito, que já observavam de longe, se aproximam imediatamente.",
+    voz: "Respeito: \"Falar já é o primeiro gesto de retomada.\"",
+    choices: [{ label: "Seguir com Rituais, Sabedoria e Respeito", next: "intervencao_com_amigo" }]
+  },
+  cuidar_do_outro: {
+    scene: "Olhar para o amigo",
+    text: "Em vez de se fechar na própria dor, você repara que seu amigo está mais calado que o normal, os ombros mais curvados. Você pergunta, sem cobrança, apenas presença: \"Como você está, de verdade?\"\n\nSeu amigo demora para responder — mas quando responde, é a primeira vez que ele diz em voz alta o que Vício e Preconceito andavam sussurrando só para ele.",
+    voz: "Seu amigo, baixinho: \"Eu não sabia como dizer isso.\"",
+    choices: [{ label: "Buscar juntos Rituais, Sabedoria e Respeito", next: "intervencao_com_amigo" }]
+  },
+  intervencao: {
+    scene: "A intervenção — Rituais, Sabedoria e Respeito",
+    text: "As três personagens-valores se colocam ao seu redor, como num novo círculo ritual. Elas não apagam o que Vício e Preconceito disseram — mas mostram que essas vozes não têm a palavra final sobre quem você é.\n\nVocê é reerguido, não sozinho, mas em comunidade — como a Mãe Terra, no início, já havia anunciado que seria preciso.",
+    voz: "Rituais: \"Você não caminha essa trilha (tape) sozinho.\"",
+    choices: [{ label: "Seguir até o depoimento final", next: "final" }]
+  },
+  intervencao_com_amigo: {
+    scene: "A intervenção — o círculo se abre para dois",
+    text: "Rituais, Sabedoria e Respeito se colocam ao redor de vocês dois. O peso que cada um carregava sozinho agora é dividido, visto, nomeado por outros olhos além dos seus.\n\nNenhum dos dois precisa fingir que está bem. E é justamente por isso que os dois começam, de fato, a ficar melhor.",
+    voz: "Sabedoria: \"A trilha (tape) é mais segura quando se caminha em par.\"",
+    choices: [{ label: "Seguir, os dois, até o depoimento final", next: "final_dois" }]
+  },
+  final: {
+    scene: "Encerramento — o depoimento",
+    text: "No fim da peça, uma terceira jovem, já formada por uma universidade pública, se adianta e conta sua própria travessia entre os dois mundos — a aldeia e a cidade — sem que isso a tenha feito perder sua identidade étnica.\n\nEla diz, olhando para você:\n\n\"A luta do nosso povo não é com arcos e com flechas, mas com o conhecimento.\"\n\nEsta não é uma vitória sobre um inimigo no jogo — é a lembrança de que nenhuma travessia difícil precisa ser feita em silêncio ou sozinho.",
+    voz: "Se você, ou alguém que você conhece, estiver passando por um momento parecido com o desta história, conversar com alguém de confiança ou procurar o CVV (188, ligação gratuita, 24h) pode ser um primeiro passo, assim como foi para o personagem desta peça.",
+    choices: []
+  },
+  final_dois: {
+    scene: "Encerramento — o depoimento, ouvido a dois",
+    text: "No fim da peça, uma terceira jovem, já formada por uma universidade pública, se adianta e conta sua própria travessia entre os dois mundos — a aldeia e a cidade — sem que isso a tenha feito perder sua identidade étnica.\n\nEla olha para você e para seu amigo, lado a lado, e diz:\n\n\"A luta do nosso povo não é com arcos e com flechas, mas com o conhecimento. E essa luta se caminha mais forte quando não se caminha só.\"\n\nVocês dois seguem, agora, sabendo que a travessia entre os dois mundos não precisa ser feita em silêncio nem sozinhos.",
+    voz: "Se você, ou alguém que você conhece, estiver passando por um momento parecido com o desta história, conversar com alguém de confiança ou procurar o CVV (188, ligação gratuita, 24h) pode ser um primeiro passo, assim como foi para os personagens desta peça.",
+    choices: []
+  }
+};
+
+function goTo(id){
+  const node = nodes[id];
+  document.getElementById('sceneLabel').textContent = node.scene;
+  document.getElementById('text').textContent = node.text;
+  document.getElementById('voz').textContent = node.voz || "";
+  const choicesDiv = document.getElementById('choices');
+  choicesDiv.innerHTML = "";
+  node.choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.textContent = c.label;
+    btn.onclick = () => goTo(c.next);
+    choicesDiv.appendChild(btn);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+goTo('inicio');
+</script>
+</body>
+</html>

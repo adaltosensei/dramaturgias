@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Siaburu — Livro-jogo</title>
+<style>
+  :root{ --bg:#1b1207; --panel:#2a1c0f; --accent:#b5651d; --text:#f2e6d8; --muted:#c9b39a; }
+  body{ margin:0; font-family:Georgia,'Times New Roman',serif; background:radial-gradient(ellipse at top, #3a2612, var(--bg)); color:var(--text); min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:40px 16px; }
+  .book{max-width:740px; width:100%;}
+  h1{font-size:2.1em; letter-spacing:2px; text-align:center; color:var(--accent); margin-bottom:0;}
+  .subtitle{text-align:center; color:var(--muted); font-style:italic; margin-top:4px; margin-bottom:28px; font-size:0.95em;}
+  .scene-label{color:var(--accent); text-transform:uppercase; letter-spacing:3px; font-size:0.8em; margin-bottom:10px;}
+  .panel{background:var(--panel); border:1px solid #4a2f14; border-radius:6px; padding:28px 30px; box-shadow:0 8px 30px rgba(0,0,0,0.4);}
+  .text{font-size:1.15em; line-height:1.8; white-space:pre-line;}
+  .choices{margin-top:26px; display:flex; flex-direction:column; gap:12px;}
+  button.choice{ background:transparent; border:1px solid var(--accent); color:var(--text); padding:14px 18px; font-family:inherit; font-size:1em; text-align:left; border-radius:4px; cursor:pointer; transition:all .2s; }
+  button.choice:hover{background:var(--accent); color:#1b1207;}
+  .restart{margin-top:30px; text-align:center;}
+  .restart button{background:var(--accent); color:#1b1207; border:none; padding:10px 24px; border-radius:4px; font-family:inherit; cursor:pointer; font-size:0.95em;}
+  .glossario{margin-top:14px; font-size:0.85em; color:var(--muted); border-top:1px dashed #4a2f14; padding-top:10px;}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="book">
+  <h1>SIABURU</h1>
+  <div class="subtitle">livro-jogo baseado na dramaturgia do corpo de Xipu Puri e Daniela Mara (2022)<br>— uma jornada sensorial, não uma disputa —</div>
+  <div class="scene-label" id="sceneLabel">Cena</div>
+  <div class="panel">
+    <div class="text" id="text"></div>
+    <div class="choices" id="choices"></div>
+    <div class="glossario" id="glossario"></div>
+  </div>
+  <div class="restart"><button onclick="goTo('inicio')">Recomeçar a jornada</button></div>
+  <footer>Adaptação livre e educacional a partir de Puri &amp; Mara (2022), <em>Siaburu</em>. Uso pedagógico.</footer>
+</div>
+
+<script>
+const nodes = {
+  inicio: {
+    scene: "Prólogo",
+    text: "Você não é um personagem com nome. Você é um corpo — e um corpo, aqui, é memória que ainda não terminou de se lembrar.\n\nNão há palco, não há narrador, não há ninguém para lhe explicar o que vem a seguir. Há apenas o chão sob os pés e um silêncio que parece esperar por um gesto.\n\nFeche os olhos, se puder, por um instante. Depois, escolha por onde o corpo começa a se mover.",
+    choices: [
+      { label: "Deixar as mãos tocarem o chão primeiro", next: "raizes" },
+      { label: "Deixar os ouvidos guiarem o corpo primeiro", next: "sons_direto" },
+      { label: "Ficar imóvel, deixando o silêncio decidir por você", next: "silencio" }
+    ]
+  },
+  silencio: {
+    scene: "Prólogo — o silêncio antes do gesto",
+    text: "Você espera. Nada acontece — e, no entanto, tudo já começou: a respiração muda de ritmo, o peso do corpo se desloca de um pé para o outro sem que você mande.\n\nTalvez esperar também seja uma forma de dançar. Talvez o primeiro gesto de retomada seja, simplesmente, permitir-se sentir antes de agir.",
+    choices: [
+      { label: "Agora sim, deixar as mãos tocarem o chão", next: "raizes" },
+      { label: "Agora sim, deixar os ouvidos guiarem", next: "sons_direto" }
+    ]
+  },
+  raizes: {
+    scene: "Cena I — Raízes",
+    text: "Suas mãos afundam devagar em uma terra que parece lembrar de você antes mesmo de você lembrar dela.\n\nHá um pulso ali embaixo — não é o seu coração, é mais antigo que ele, mais largo, mais lento. Seu corpo se curva, se enraíza, e por um instante você não sabe mais onde termina você e onde começa a terra.\n\nUma pergunta atravessa esse pulso, sem palavras: o que, em você, ainda não tinha nome antes deste gesto?",
+    choices: [
+      { label: "Seguir o pulso da terra com o corpo inteiro, sem pressa", next: "sons_lento" },
+      { label: "Responder ao pulso com força, quase um tranco no chão", next: "sons_forte" }
+    ]
+  },
+  sons_direto: {
+    scene: "Cena II — Sons da Terra",
+    text: "Um vento traz vozes que não são bem vozes: passarinhos, água correndo, o som seco de folhas pisadas há muito tempo.\n\nSeu corpo começa, sem que você decida, a responder a esses sons com pequenos gestos. Você dialoga com um pássaro que talvez não exista mais. Você dialoga com um rio que talvez ainda exista, em algum lugar que os mapas não sabem nomear.",
+    choices: [
+      { label: "Dançar em direção ao vento — deixar-se levar pela Ventania", next: "ventania" },
+      { label: "Dançar contra o vento — resistir, ficar enraizado", next: "ventania_resistencia" }
+    ]
+  },
+  sons_lento: {
+    scene: "Cena II — Sons da Terra (lentos)",
+    text: "Devagar, os sons chegam como quem não quer assustar: o farfalhar de folhas, um pássaro distante, a água que ainda não sabe se deve correr ou repousar.\n\nSeu corpo aprende, nesse ritmo, que nem toda retomada precisa ser urgente. Algumas memórias só se deixam tocar por quem chega sem pressa.",
+    choices: [
+      { label: "Deixar-se levar pela Ventania, ainda devagar", next: "ventania" },
+      { label: "Resistir ao vento, com os pés fincados no chão", next: "ventania_resistencia" }
+    ]
+  },
+  sons_forte: {
+    scene: "Cena II — Sons da Terra (intensos)",
+    text: "Os sons chegam quase como um chamado urgente: o vento bate mais forte, os pássaros gritam em vez de cantar, a água corre com pressa, como se fugisse de algo.\n\nSeu corpo responde na mesma intensidade — não há tempo para hesitar quando a terra parece pedir socorro.",
+    choices: [
+      { label: "Deixar-se levar pela Ventania com a mesma força", next: "ventania" },
+      { label: "Ainda assim, resistir — plantar os pés com firmeza", next: "ventania_resistencia" }
+    ]
+  },
+  ventania: {
+    scene: "Cena III — A Retomada pela Ventania",
+    text: "O vento cresce. Não é destruição — é retomada.\n\nNesse redemoinho, você sente a presença de mulheres indígenas que vieram antes de você, e de outras que virão depois: o Wayrakuna, o Movimento Plurinacional de Indígenas Mulheres, sopra através de você. Seu corpo já não dança sozinho — dança em coro com corpos que você nunca viu, mas que reconhece.",
+    choices: [
+      { label: "Deixar a Ventania te levar até a Guerra de Kūni", next: "guerra" }
+    ]
+  },
+  ventania_resistencia: {
+    scene: "Cena III — A Retomada pela Ventania (resistência)",
+    text: "Você planta os pés e recebe o vento de frente, sem se deixar levar por inteiro. Ainda assim, algo nele te atravessa: o Wayrakuna, o Movimento Plurinacional de Indígenas Mulheres, não pede que você se entregue — pede apenas que você reconheça sua presença.\n\nResistir, aqui, não é o oposto de retomar. É outra forma de retomar.",
+    choices: [
+      { label: "Seguir, agora sim, até a Guerra de Kūni", next: "guerra" }
+    ]
+  },
+  guerra: {
+    scene: "Cena IV — A Guerra de Kūni",
+    text: "Aqui o corpo já não dança suave. Ele se contorce, resiste, cai e se ergue.\n\nAs marcas da violência colonial atravessam este chão: os crimes contra o território, contra os corpos, contra a memória. Você sente essa violência não como uma história distante, mas como algo que ainda pulsa sob seus pés, hoje, agora.\n\nO que seu corpo faz diante disso?",
+    choices: [
+      { label: "Gesto de luta — punhos, tensão, o corpo que enfrenta", next: "artesanias_luta" },
+      { label: "Gesto de luto — corpo curvado, mãos no peito, o corpo que chora", next: "artesanias_luto" },
+      { label: "Os dois gestos, um depois do outro — luta e luto não se excluem", next: "artesanias_ambos" }
+    ]
+  },
+  artesanias_luta: {
+    scene: "Cena V — Artesanias (da luta)",
+    text: "Depois da guerra, as mãos que empunharam a tensão precisam, agora, criar.\n\nSeu corpo começa a imitar o gesto de tecer, de moldar, de entrelaçar — como se cada movimento fosse um fio sendo passado por entre os dedos de gerações. A força que serviu para resistir agora serve para construir.",
+    choices: [{ label: "Seguir até o canto final: Siaburu", next: "final_forca" }]
+  },
+  artesanias_luto: {
+    scene: "Cena V — Artesanias (do luto)",
+    text: "Depois do choro, as mãos ainda tremem um pouco quando começam a tecer.\n\nMas há algo de cicatrização nesse gesto: cada fio entrelaçado é também uma lágrima transformada em objeto, em memória que pode ser tocada, contada, transmitida a quem vier depois.",
+    choices: [{ label: "Seguir até o canto final: Siaburu", next: "final_memoria" }]
+  },
+  artesanias_ambos: {
+    scene: "Cena V — Artesanias (luta e luto)",
+    text: "Suas mãos tecem enquanto o corpo ainda guarda os dois gestos: a tensão da luta e o peso do luto, juntos, na mesma trama.\n\nTalvez seja essa a artesania mais completa: a que não escolhe entre resistir e chorar, mas entrelaça as duas coisas em um mesmo fio.",
+    choices: [{ label: "Seguir até o canto final: Siaburu", next: "final_completo" }]
+  },
+  final_forca: {
+    scene: "Cena VI — Siaburu (força)",
+    text: "E então, do fundo do peito, sobe um canto que não é triunfante, mas também não se curva por inteiro.\n\nSiaburu — o canto triste dos pássaros sagrados — atravessa você como quem afirma: a memória dói, mas também sustenta.\n\nVocê não termina esta jornada como quem venceu um jogo. Você termina como quem atravessou um corpo — o seu, e ao mesmo tempo o de um povo inteiro.",
+    glossario: "Glossário (elaborado pelos próprios autores da obra): Siaburu — \"o canto triste dos pássaros sagrados\" (Puri & Mara, 2022, p. 27).",
+    choices: []
+  },
+  final_memoria: {
+    scene: "Cena VI — Siaburu (memória)",
+    text: "E então, do fundo da terra, sobe um canto baixo, quase um sussurro.\n\nSiaburu — o canto triste dos pássaros sagrados — não pede que a dor desapareça, apenas que ela seja lembrada por quem ainda pode cantar.\n\nVocê não termina esta jornada como quem venceu um jogo. Você termina como quem aprendeu a carregar uma memória sem se quebrar com ela.",
+    glossario: "Glossário (elaborado pelos próprios autores da obra): Siaburu — \"o canto triste dos pássaros sagrados\" (Puri & Mara, 2022, p. 27).",
+    choices: []
+  },
+  final_completo: {
+    scene: "Cena VI — Siaburu (inteiro)",
+    text: "E então, do fundo do peito e do fundo da terra ao mesmo tempo, sobe um canto que é força e é lágrima, sem escolher entre as duas.\n\nSiaburu — o canto triste dos pássaros sagrados — soa, em você, como algo inteiro: nem só resistência, nem só luto, mas as duas coisas entrelaçadas, como as artesanias que suas mãos acabaram de tecer.\n\nVocê não termina esta jornada como quem venceu um jogo. Você termina como quem atravessou um corpo inteiro — o seu, e o de um povo.",
+    glossario: "Glossário (elaborado pelos próprios autores da obra): Siaburu — \"o canto triste dos pássaros sagrados\" (Puri & Mara, 2022, p. 27).",
+    choices: []
+  }
+};
+
+function goTo(id){
+  const node = nodes[id];
+  document.getElementById('sceneLabel').textContent = node.scene;
+  document.getElementById('text').textContent = node.text;
+  const choicesDiv = document.getElementById('choices');
+  choicesDiv.innerHTML = "";
+  node.choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.textContent = c.label;
+    btn.onclick = () => goTo(c.next);
+    choicesDiv.appendChild(btn);
+  });
+  document.getElementById('glossario').textContent = node.glossario || "";
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+goTo('inicio');
+</script>
+</body>
+</html>
